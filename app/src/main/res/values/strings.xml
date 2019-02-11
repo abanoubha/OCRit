@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">OCRit</string>
+    <string name="share_button">Share Button</string>
+    <string name="copy_button">Copy Button</string>
+    <string name="gallery_button">Gallery Button</string>
+    <string name="camera_button">Camera Button</string>
+    <string name="image_view_of_the_sample_text">Image View of the sample text</string>
+</resources>
