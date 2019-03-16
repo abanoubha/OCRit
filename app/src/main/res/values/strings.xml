@@ -5,4 +5,5 @@
     <string name="gallery_button">Gallery Button</string>
     <string name="camera_button">Camera Button</string>
     <string name="image_view_of_the_sample_text">Image View of the sample text</string>
+    <string name="recognizing_text">Recognizing Text On Image...</string>
 </resources>

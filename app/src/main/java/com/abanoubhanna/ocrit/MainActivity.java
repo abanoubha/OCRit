@@ -7,11 +7,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,24 +21,27 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final int IMAGE_GALLERY_REQUEST = 20;
     public static final int CAMERA_REQUEST_CODE = 228;
     //public static final int CAMERA_PERMISSION_REQUEST_CODE = 4192;
+    TextView textv;
+    ImageView iv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        OcrManager manager = new OcrManager();
-        manager.initAPI();
-        ((TextView)findViewById(R.id.textView))
-                .setText(manager.startRecognize(
-                        BitmapFactory.decodeResource(getResources(),
-                                R.drawable.sample)));
+        textv = findViewById(R.id.textView);
+        iv = findViewById(R.id.imageView);
+
+        OcrAsyncTask task = new OcrAsyncTask(MainActivity.this);
+        task.execute(BitmapFactory.decodeResource(getResources(), R.drawable.sample));
+
     }
     public void takePhoto(View v){
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -61,11 +65,11 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
                     Bitmap image = BitmapFactory.decodeStream(inputStream);
-                    ((ImageView)findViewById(R.id.imageView)).setImageBitmap(image);
-                    //OCR the image
-                    OcrManager manager = new OcrManager();
-                    manager.initAPI();
-                    ((TextView)findViewById(R.id.textView)).setText(manager.startRecognize(image));
+                    iv.setImageBitmap(image);
+
+                    OcrAsyncTask task = new OcrAsyncTask(MainActivity.this);
+                    task.execute(image);
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     Toast.makeText(this,"unable to find the image", Toast.LENGTH_LONG).show();
@@ -74,10 +78,9 @@ public class MainActivity extends AppCompatActivity {
             if (requestCode == CAMERA_REQUEST_CODE){
                 Bitmap cameraImage = (Bitmap) data.getExtras().get("data");
                 ((ImageView)findViewById(R.id.imageView)).setImageBitmap(cameraImage);
-                //OCR the image
-                OcrManager manager = new OcrManager();
-                manager.initAPI();
-                ((TextView)findViewById(R.id.textView)).setText(manager.startRecognize(cameraImage));
+
+                OcrAsyncTask task = new OcrAsyncTask(MainActivity.this);
+                task.execute(cameraImage);
             }
         }
     }
@@ -98,5 +101,51 @@ public class MainActivity extends AppCompatActivity {
             clipboard.setPrimaryClip(clip);
         }
         Toast.makeText(this,"text copied", Toast.LENGTH_LONG).show();
+    }
+    //asyncTask runs in background
+    private static class OcrAsyncTask extends AsyncTask<Bitmap, Integer, String> {
+        private WeakReference<MainActivity> activityWeakReference;
+
+        OcrAsyncTask(MainActivity activity) {
+            activityWeakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            MainActivity activity = activityWeakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
+
+            //activity.progressBar.setVisibility(View.VISIBLE);
+            activity.textv.setText(R.string.recognizing_text);
+        }
+
+        @Override
+        protected String doInBackground(Bitmap... bitmaps) {
+            OcrManager manager = new OcrManager();
+            manager.initAPI();
+            return manager.startRecognize(bitmaps[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            MainActivity activity = activityWeakReference.get();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
+
+            activity.textv.setText(s);
+            //activity.progressBar.setVisibility(View.GONE);
+        }
     }
 }

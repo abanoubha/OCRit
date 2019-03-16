@@ -34,46 +34,51 @@
     <LinearLayout
         android:id="@+id/controls"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="0dp"
+        android:paddingBottom="0dp"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/btnCam"
-            android:onClick="takePhoto"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_camera"
-            android:contentDescription="@string/camera_button" />
+            android:contentDescription="@string/camera_button"
+            android:onClick="takePhoto"
+            android:background="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/ic_camera" />
 
         <ImageButton
             android:id="@+id/btnGallery"
-            android:onClick="getImageFromGallery"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_gallery"
-            android:contentDescription="@string/gallery_button" />
+            android:contentDescription="@string/gallery_button"
+            android:onClick="getImageFromGallery"
+            android:background="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/ic_photo" />
 
         <ImageButton
             android:id="@+id/btnCopy"
-            android:onClick="copyText"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            app:srcCompat="?attr/actionModeCopyDrawable"
-            android:contentDescription="@string/copy_button" />
+            android:contentDescription="@string/copy_button"
+            android:onClick="copyText"
+            android:background="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/ic_copy" />
 
         <ImageButton
             android:id="@+id/btnShare"
-            android:onClick="shareText"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            app:srcCompat="?attr/actionModeShareDrawable"
-            android:contentDescription="@string/share_button" />
+            android:contentDescription="@string/share_button"
+            android:onClick="shareText"
+            android:background="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/ic_share" />
     </LinearLayout>
 
 </RelativeLayout>
